@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model testTable {
+  firstName  String
+  secondName String
+
+  @@id([firstName, secondName])
+}
+
+model Admin {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  password    String
+  role        String
+  phoneNumber String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Teachers {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String?
+  role         String
+  subject      String
+  phoneNumber  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  subjects     Subjects[]
+  classTeacher Class?        @relation("classTeacher")
+  allTeachers  Class[]
+  assigment    Assignments[]
+  classId      String?
+}
+
+model Subjects {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  teachers    Teachers[]
+  results     Results[]
+}
+
+model Students {
+  id          String    @id @default(uuid())
+  name        String
+  email       String
+  phoneNumber String?
+  password    String?
+  role        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  results     Results[]
+}
+
+// model TeacherSubjects {
+//   id        String    @id @default(uuid())
+//   subject   Subjects? @relation(fields: [subjectId], references: [id])
+//   subjectId String
+//   teacher   Teachers? @relation(fields: [teacherId], references: [id])
+//   teacherId String
+//   createdAt DateTime  @default(now())
+//   updatedAt DateTime  @default(now())
+// }
+
+model Class {
+  id             String        @id @default(uuid())
+  name           String
+  description    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @default(now())
+  allTeachers    Teachers[]
+  // teacherId      String
+  classTeacher   Teachers?     @relation("classTeacher", fields: [classTeacherId], references: [id])
+  classTeacherId String?       @unique
+  results        Results[]
+  assignments    Assignments[]
+}
+
+model Results {
+  id        String    @default(uuid())
+  class     Class     @relation(fields: [classId], references: [id])
+  classId   String
+  student   Students? @relation(fields: [studentId], references: [id])
+  studentId String
+  subject   Subjects  @relation(fields: [subjectId], references: [id])
+  subjectId String
+  grade     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  @@id([studentId, subjectId])
+}
+
+model Assignments {
+  id        String   @id @default(uuid())
+  class     Class    @relation(fields: [classId], references: [id])
+  classId   String
+  Teacher   Teachers @relation(fields: [teacherId], references: [id])
+  teacherId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}

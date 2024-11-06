@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "types": ["jest"]
+    // "exclude":[
+    //   "node_modules",
+    //   "**/*.test.ts"
+    // ]
+  }
+}
